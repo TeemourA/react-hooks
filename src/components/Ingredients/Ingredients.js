@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -7,25 +7,30 @@ import IngredientList from './IngredientList';
 const Ingredients = () => {
   const [ingredients, setIngredients] = useState([]);
 
-  useEffect(() => console.log('comp rendered'));
+  useEffect(() => console.log('Ingredients component rendered'));
 
-  useEffect(() => {
-    fetch(
-      'https://react-hooks-update-e4483-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json'
-    )
-      .then(response => response.json())
-      .then(responseData => {
-        const loadedIngredients = Object.entries(responseData).map(
-          ([id, ingredient]) => ({
-            id,
-            title: ingredient.title,
-            amount: ingredient.amount,
-          })
-        );
+  // useEffect(() => {
+  //   fetch(
+  //     'https://react-hooks-update-e4483-default-rtdb.europe-west1.firebasedatabase.app/ingredients.json'
+  //   )
+  //     .then(response => response.json())
+  //     .then(responseData => {
+  //       const loadedIngredients = Object.entries(responseData).map(
+  //         ([id, ingredient]) => ({
+  //           id,
+  //           title: ingredient.title,
+  //           amount: ingredient.amount,
+  //         })
+  //       );
 
-        setIngredients(loadedIngredients);
-      });
-  }, []);
+  //       setIngredients(loadedIngredients);
+  //     });
+  // }, []);
+
+  const filteredIngredientsHandler = useCallback(
+    filteredIngredients => setIngredients(filteredIngredients),
+    []
+  );
 
   const addIngredientHandler = ingredient => {
     fetch(
@@ -46,17 +51,25 @@ const Ingredients = () => {
       });
   };
 
-  const removeIngredient = id =>
-    setIngredients(prevIngredients =>
-      prevIngredients.filter(ingredient => ingredient.id !== id)
+  const removeIngredient = id => {
+    fetch(
+      `https://react-hooks-update-e4483-default-rtdb.europe-west1.firebasedatabase.app/ingredients/${id}.json`,
+      {
+        method: 'DELETE',
+      }
+    ).then(response =>
+      setIngredients(prevIngredients =>
+        prevIngredients.filter(ingredient => ingredient.id !== id)
+      )
     );
+  };
 
   return (
     <div className="App">
       <IngredientForm onAddIngredient={addIngredientHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={filteredIngredientsHandler} />
         <IngredientList
           ingredients={ingredients}
           onRemoveItem={removeIngredient}
