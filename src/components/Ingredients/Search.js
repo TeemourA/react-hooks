@@ -30,6 +30,10 @@ const Search = React.memo(props => {
             );
 
             onLoadIngredients(loadedIngredients);
+          })
+          .catch(e => {
+            console.log(e.message);
+            onLoadIngredients([]);
           });
       }
       return () => {
