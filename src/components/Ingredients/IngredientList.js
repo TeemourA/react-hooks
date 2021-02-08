@@ -2,9 +2,9 @@ import React from 'react';
 
 import './IngredientList.css';
 
-const IngredientList = props => {
+const IngredientList = React.memo(props => {
   const { onRemoveItem } = props;
-
+  console.log('[Ingredient list] rendered');
   return (
     <section className="ingredient-list">
       <h2>Loaded Ingredients</h2>
@@ -18,6 +18,6 @@ const IngredientList = props => {
       </ul>
     </section>
   );
-};
+});
 
 export default IngredientList;
